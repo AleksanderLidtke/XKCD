@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-
 Throughout my travels I've discovered that most people, including myself, do not
 realise many things about our Planet's size. For example, the latitude and
 longitude of certain regions (South America is much further east than the US)
 or the relative size of countries (Japan is surprisingly long).
 
-Thus, I've created this script to understand such things a bit better.
+Thus, I've created this script to understand such things a bit better. It
+compares the sizes of Japan and Europe, which is the most recent surprise
+I came across.
+
+The shape data were aquired from [Global Administrative Areas](http://www.gadm.org/country)
+website. Thus, their **redistribution, or commercial use is not allowed without
+prior permission**.
+
 
 Created on Sun May 7 14:13:47 2017
 
