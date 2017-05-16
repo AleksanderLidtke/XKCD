@@ -21,6 +21,36 @@ Created on Sun May 7 14:13:47 2017
 from mpl_toolkits.basemap import Basemap
 import numpy, shapefile, os, matplotlib.pyplot
 
+def plotPrefecture(*,shp,colour,bMap,axes,latOff=0,longOff=0,lwdth=0.5):
+    """ Plot a prefecture from a shapefile.
+    
+    Kwargs
+    -------
+    * shp - shape as returned by :func:`shapefile.Reader.shapes`,
+    * colour - colour accepted by :func:`matplotlib.pyplot.Axes.plot',
+    * bMap - instance of :class:`mpl_toolkits.basemap.Basemap` used to project
+      the shape onto a map,
+    * axes - :class:`matplotlib.pyplot.Axes` instance where to plot,
+    * latOff,longOff - deg, by how much to offset the `shp` lattitudes and
+      longitudes before plotting,
+    * lwdth - line width as accepted by :func:`matplotlib.pyplot.Axes.plot'.
+    """
+    if len(shp.parts)==1: # Only one region in this shape.
+        vertices=numpy.array(shp.points)
+        bMap.plot(vertices[:,0]+longOff,vertices[:,1]+latOff,color=colour,
+                  lw=lwdth,ls='-',latlon=True,ax=axes)
+    else: # This shape has islands, disjoint regions and what-not.
+        for ip in range(len(shp.parts)): # For every part of the shape.
+            # Indices that get the slice with this part of the shape.
+            lower=shp.parts[ip]
+            if ip==len(shp.parts)-1:
+                upper=len(shp.points) # Last part.
+            else:
+                upper=shp.parts[ip+1] # Next part starts at idx parts[ip+1]
+            partVertices=numpy.array(shp.points[lower:upper])
+            bMap.plot(partVertices[:,0]+longOff,partVertices[:,1]+latOff,
+                      color=colour,lw=lwdth,ls='-',latlon=True,ax=axes)
+
 # Various font sizes.
 ticksFontSize=18
 labelsFontSizeSmall=20
@@ -49,7 +79,7 @@ lonCtr=10
 dLonJ=10 # Plot Japan at these coordinates over the map of Europe.
 dLatJ=50
 
-# Mercator projection, a.k.a. "the things you learn in schools".
+' Mercator projection, a.k.a. "the things you learn in schools".'
 fig,ax=matplotlib.pyplot.subplots(1,2,figsize=(16,8))
 
 # The whole Planet.
@@ -60,8 +90,7 @@ mercMapP.drawcountries(linewidth=0.25)
 mercMapP.drawparallels(numpy.arange(-90.,91.,30.))
 mercMapP.drawmeridians(numpy.arange(-180.,181.,60.))
 ax[0].set_title(r'$Our\ Planet$',fontsize=titleFontSize)
-mercMapP.scatter(vertices[:,0],vertices[:,1],s=0.5,color='gold',marker='.',
-                 edgecolor=None,latlon=True,ax=ax[0])
+plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=mercMapP,axes=ax[0])
 
 # Only Europe.
 mercMapE=Basemap(projection='merc',llcrnrlat=30,urcrnrlat=75,llcrnrlon=-25,
@@ -71,12 +100,12 @@ mercMapE.drawcountries(linewidth=0.25)
 mercMapE.drawparallels(numpy.arange(mercMapE.latmin,mercMapE.latmax,10.))
 mercMapE.drawmeridians(numpy.arange(mercMapE.lonmin,mercMapE.lonmax,15.))
 ax[1].set_title(r'$Europe$',fontsize=titleFontSize)
-mercMapE.scatter(vertices[:,0]-lonJpn+dLonJ,vertices[:,1]-latJpn+dLatJ,s=0.5,
-                 color='gold',marker='.',edgecolor=None,latlon=True,ax=ax[1])
+plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=mercMapE,axes=ax[1],
+               latOff=dLatJ-latJpn,longOff=dLonJ-lonJpn)
 
 fig.show()
 
-# One figure with orthonormal maps centred on Japan and Europe.
+' One figure with orthonormal maps centred on Japan and Europe.'
 fig,ax=matplotlib.pyplot.subplots(1,2,figsize=(16,8))
 
 # Centred on Japan.
@@ -87,9 +116,7 @@ ortnMapJ.drawcountries(linewidth=0.25)
 ortnMapJ.drawmeridians(numpy.arange(0,360,30))
 ortnMapJ.drawparallels(numpy.arange(-90,90,30))
 ax[0].set_title(r'${}$'.format(shapeRdr0.records()[0][4]),fontsize=titleFontSize)
-ortnMapJ.scatter(vertices[:,0],vertices[:,1],s=0.5,color='gold',marker='.',
-                 edgecolor=None, # No marker borders.
-                 latlon=True,ax=ax[0]) # Plot in lat/on on the given axes.
+plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=ortnMapJ,axes=ax[0])
 
 # Plot all the prefectures.
 cNorm=matplotlib.colors.Normalize(vmin=0,vmax=shapeRdr1.numRecords)
@@ -98,10 +125,8 @@ prefectures=shapeRdr1.shapes()
 prefRecords=shapeRdr1.records()
 for i in range(shapeRdr1.numRecords):
     if prefRecords[i][9]=='Prefecture':
-        prefVertices=numpy.array(prefectures[i].points)
-        ortnMapJ.scatter(prefVertices[:,0],prefVertices[:,1],
-                         color=scalarMap.to_rgba(i),
-                         s=0.1,marker='.',edgecolor=None,latlon=True,ax=ax[0])
+        plotPrefecture(shp=prefectures[i],colour=scalarMap.to_rgba(i),
+                       bMap=ortnMapJ,axes=ax[0])
 
 # Centred on Europe.
 ortnMapE=Basemap(projection='ortho',lat_0=latCtr,lon_0=lonCtr,resolution='c',
@@ -112,9 +137,7 @@ ortnMapE.drawmeridians(numpy.arange(0,360,30))
 ortnMapE.drawparallels(numpy.arange(-90,90,30))
 ax[1].set_title(r'${}\ over\ Europe$'.format(shapeRdr0.records()[0][4]),
     fontsize=titleFontSize)
-ortnMapE.scatter(vertices[:,0]-lonJpn+dLonJ,vertices[:,1]-latJpn+dLatJ,s=0.5,
-                 color='gold',marker='.',edgecolor=None,latlon=True,ax=ax[1])
+plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=ortnMapE,axes=ax[1],
+               latOff=dLatJ-latJpn,longOff=dLonJ-lonJpn)
 
 fig.show()
-
-#TODO scatter is OK, but it'd be better to have just the outline as a polygon.
