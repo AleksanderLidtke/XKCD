@@ -21,6 +21,8 @@ Created on Sun May 7 14:13:47 2017
 from mpl_toolkits.basemap import Basemap
 import numpy, shapefile, os, matplotlib.pyplot
 
+matplotlib.pyplot.xkcd() # Here we go.
+
 def plotPrefecture(*,shp,colour,bMap,axes,latOff=0,longOff=0,lwdth=0.5):
     """ Plot a prefecture from a shapefile.
     
@@ -100,7 +102,7 @@ mercMapE.drawcountries(linewidth=0.25)
 mercMapE.drawparallels(numpy.arange(mercMapE.latmin,mercMapE.latmax,10.))
 mercMapE.drawmeridians(numpy.arange(mercMapE.lonmin,mercMapE.lonmax,15.))
 ax[1].set_title(r'$Europe$',fontsize=titleFontSize)
-plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=mercMapE,axes=ax[1],
+plotPrefecture(shp=shape,colour='gold',lwdth=2,bMap=mercMapE,axes=ax[1],
                latOff=dLatJ-latJpn,longOff=dLonJ-lonJpn)
 
 fig.show()
@@ -116,7 +118,7 @@ ortnMapJ.drawcountries(linewidth=0.25)
 ortnMapJ.drawmeridians(numpy.arange(0,360,30))
 ortnMapJ.drawparallels(numpy.arange(-90,90,30))
 ax[0].set_title(r'${}$'.format(shapeRdr0.records()[0][4]),fontsize=titleFontSize)
-plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=ortnMapJ,axes=ax[0])
+plotPrefecture(shp=shape,colour='gold',lwdth=2,bMap=ortnMapJ,axes=ax[0])
 
 # Plot all the prefectures.
 cNorm=matplotlib.colors.Normalize(vmin=0,vmax=shapeRdr1.numRecords)
@@ -126,7 +128,7 @@ prefRecords=shapeRdr1.records()
 for i in range(shapeRdr1.numRecords):
     if prefRecords[i][9]=='Prefecture':
         plotPrefecture(shp=prefectures[i],colour=scalarMap.to_rgba(i),
-                       bMap=ortnMapJ,axes=ax[0])
+                       lwdth=0.5,bMap=ortnMapJ,axes=ax[0])
 
 # Centred on Europe.
 ortnMapE=Basemap(projection='ortho',lat_0=latCtr,lon_0=lonCtr,resolution='c',
@@ -137,7 +139,7 @@ ortnMapE.drawmeridians(numpy.arange(0,360,30))
 ortnMapE.drawparallels(numpy.arange(-90,90,30))
 ax[1].set_title(r'${}\ over\ Europe$'.format(shapeRdr0.records()[0][4]),
     fontsize=titleFontSize)
-plotPrefecture(shp=shape,colour='gold',lwdth=1,bMap=ortnMapE,axes=ax[1],
+plotPrefecture(shp=shape,colour='gold',lwdth=2,bMap=ortnMapE,axes=ax[1],
                latOff=dLatJ-latJpn,longOff=dLonJ-lonJpn)
 
 fig.show()
