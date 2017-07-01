@@ -143,3 +143,22 @@ plotPrefecture(shp=shape,colour='gold',lwdth=2,bMap=ortnMapE,axes=ax[1],
                latOff=dLatJ-latJpn,longOff=dLonJ-lonJpn)
 
 fig.show()
+
+' Japan and Kitakyushu overlaid on Europe.'
+fig,ax=matplotlib.pyplot.subplots(1,1,figsize=(16,8))
+mercMapE=Basemap(projection='merc',llcrnrlat=30,urcrnrlat=75,llcrnrlon=-25,
+                urcrnrlon=40,lat_ts=10,ax=ax,resolution='l')
+mercMapE.drawcoastlines(linewidth=0.5)
+mercMapE.drawcountries(linewidth=0.25)
+mercMapE.drawparallels(numpy.arange(mercMapE.latmin,mercMapE.latmax,10.))
+mercMapE.drawmeridians(numpy.arange(mercMapE.lonmin,mercMapE.lonmax,15.))
+ax.set_title(r'$Europe,\ true\ lat.$',fontsize=titleFontSize)
+plotPrefecture(shp=shape,colour='gold',lwdth=2,bMap=mercMapE,axes=ax,
+               latOff=0,longOff=dLonJ-lonJpn)
+# Show annotation at the true latitude.
+xKIT,yKIT=mercMapE.projtran(130.834730+dLonJ-lonJpn,33.8924837)
+xTXT,yTXT=mercMapE.projtran(110.834730+dLonJ-lonJpn,45.8924837)
+ax.scatter([xKIT],[yKIT],s=50,c='crimson')
+ax.annotate('Here', xy=(xKIT,yKIT),xytext=(xTXT,yTXT),color='crimson',
+	arrowprops=dict(facecolor='crimson', shrink=0.05))
+fig.show()
