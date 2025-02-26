@@ -64,9 +64,9 @@ matplotlib.rc('ytick',labelsize=ticksFontSize)
 cm=matplotlib.pyplot.cm.get_cmap('viridis')
 
 # Read a shapefile with Japan's cartography data.
-shapeRdr0=shapefile.Reader(os.path.join('borders','JPN_adm0')) # Country.
-shapeRdr1=shapefile.Reader(os.path.join('borders','JPN_adm1')) # Prefectures.
-shapeRdr2=shapefile.Reader(os.path.join('borders','JPN_adm2')) # Towns.
+shapeRdr0=shapefile.Reader(os.path.join('borders','gadm28_JPN_shp','JPN_adm0')) # Country.
+shapeRdr1=shapefile.Reader(os.path.join('borders','gadm28_JPN_shp','JPN_adm1')) # Prefectures.
+shapeRdr2=shapefile.Reader(os.path.join('borders','gadm28_JPN_shp','JPN_adm2')) # Towns.
 shape=shapeRdr0.shapes()[0]
 if shape.shapeType != shapefile.POLYGON:
     raise ValueError('Shape not polygon with shapeType={}'.format(shape.shapeType ))
