@@ -113,7 +113,7 @@ mercMapE.drawparallels(numpy.arange(mercMapE.latmin,mercMapE.latmax,10.))
 mercMapE.drawmeridians(numpy.arange(mercMapE.lonmin,mercMapE.lonmax,15.))
 ax[1].set_title(r'$Europe$',fontsize=titleFontSize)
 plotPrefecture(shp=shape,colour='limegreen',lwdth=2,bMap=mercMapE,axes=ax[1],
-               latOff=dlatBra-latBra,longOff=dlonBra-lonBra)
+               latOff=40,longOff=dlonBra-lonBra, flipUpsideDown=True)
 
 fig.show()
 
